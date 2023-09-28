@@ -1,13 +1,9 @@
-def run():
-    print("Running the mirror script!")
-
-# Add your logic here
 import typer
 import glob
 import os
 from PIL import Image
 
-app = typer.Typer()
+# app = typer.Typer()
 
 def mirror_image(image_path: str, output_dir: str):
     img = Image.open(image_path)
@@ -29,19 +25,25 @@ def mirror_image(image_path: str, output_dir: str):
     output_path_right = os.path.join(output_dir, f"{filename}_right{ext}")
     new_img.save(output_path_right)
 
-@app.command()
 def main(paths: list[str], output: str = typer.Option(None, "-o", "--output", help="Output directory.")):
-    for path in paths:
-        for image_path in glob.glob(path):
-            if output:
-                output_dir = output
-            else:
-                output_dir = os.path.join(os.path.dirname(image_path), "output")
+    """
+    Mirror an image.
 
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
+    :param paths: The path to the source image.
+    :param output: The directory where the mirrored image will be saved.
+    """
+    print('Running the mirror script!')
+    # for path in paths:
+    #     for image_path in glob.glob(path):
+    #         if output:
+    #             output_dir = output
+    #         else:
+    #             output_dir = os.path.join(os.path.dirname(image_path), "output")
 
-            mirror_image(image_path, output_dir)
+    #         if not os.path.exists(output_dir):
+    #             os.makedirs(output_dir)
+
+    #         mirror_image(image_path, output_dir)
 
 if __name__ == "__main__":
-    app()
+    typer.run(main)
