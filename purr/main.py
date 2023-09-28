@@ -1,16 +1,35 @@
-from typer import Typer, Argument
-import importlib
+import typer
+import subprocess
+from pathlib import Path
 
-app = Typer()
+app = typer.Typer()
 
 @app.command()
-def run(clump: str = Argument(..., help="The clump to use"), script: str = Argument(..., help="The script to run within the clump")):
-    module_path = f"purr.clumps.{clump}.{script}.entry"
-    try:
-        entry_module = importlib.import_module(module_path)
-        entry_module.run()
-    except ImportError:
-        print(f"Invalid clump '{clump}' or script '{script}'. Please choose from existing ones.")
+def install(clump: str):
+    clump_path = Path(f"./clumps/{clump}")
+    if not clump_path.joinpath("poetry.lock").exists():
+        typer.echo(f"Installing dependencies for the {clump} clump.")
+        subprocess.run(["poetry", "install"], cwd=clump_path)
+    else:
+        typer.echo(f"Dependencies for the {clump} clump are already installed.")
+
+@app.command()
+def run(clump: str, script: str, script_args: str = typer.Option(None, "--args", help="Arguments for the script")):
+    clump_path = Path(f"./clumps/{clump}")
+    if not clump_path.joinpath("poetry.lock").exists():
+        typer.echo(f"Dependencies for clump '{clump}' are not installed. Run 'purr install {clump}' first.")
+        raise typer.Exit(code=1)
+
+    script_path = clump_path.joinpath(script, "entry.py")
+    if script_path.exists():
+        if script_args:
+            args = ["python", str(script_path)] + script_args.split()
+            subprocess.run(args)
+        else:
+            subprocess.run(["python", str(script_path)])
+    else:
+        typer.echo(f"Script '{script}' not found in clump '{clump}'")
+        raise typer.Exit(code=1)
 
 if __name__ == "__main__":
     app()
