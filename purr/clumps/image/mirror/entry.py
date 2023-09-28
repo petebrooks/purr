@@ -1,11 +1,13 @@
 import typer
 import glob
 import os
-from PIL import Image
+# Uncomment the following line when you're ready to use PIL
+# from PIL import Image
 
-# app = typer.Typer()
+app = typer.Typer(invoke_without_command=True)
 
 def mirror_image(image_path: str, output_dir: str):
+    # Uncomment the following lines when you're ready to use PIL
     img = Image.open(image_path)
     img_width, img_height = img.size
     new_img = Image.new("RGB", (img_width * 2, img_height))
@@ -25,14 +27,13 @@ def mirror_image(image_path: str, output_dir: str):
     output_path_right = os.path.join(output_dir, f"{filename}_right{ext}")
     new_img.save(output_path_right)
 
+@app.callback()
 def main(paths: list[str], output: str = typer.Option(None, "-o", "--output", help="Output directory.")):
     """
     Mirror an image.
-
-    :param paths: The path to the source image.
-    :param output: The directory where the mirrored image will be saved.
     """
     print('Running the mirror script!')
+    # Uncomment the following lines when you're ready to use glob and PIL
     # for path in paths:
     #     for image_path in glob.glob(path):
     #         if output:
@@ -46,4 +47,4 @@ def main(paths: list[str], output: str = typer.Option(None, "-o", "--output", he
     #         mirror_image(image_path, output_dir)
 
 if __name__ == "__main__":
-    typer.run(main)
+    app()

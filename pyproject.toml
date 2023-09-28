@@ -9,6 +9,9 @@ readme = "README.md"
 python = ">=3.9,<3.12"
 typer = "^0.9.0"
 numpy = "^1.26.0"
+send2trash = "^1.8.2"
+pillow = "^10.0.1"
+rich = "^13.5.3"
 
 
 [tool.poetry.scripts]
