@@ -1,32 +1,14 @@
-#!/usr/bin/env python3
-
 import glob
 import os
 import send2trash
 from PIL import Image
 import typer
+from rich.console import Console
+from rich.table import Table
 from typing import List
 
 app = typer.Typer(invoke_without_command=True)
-
-def print_color(text, color):
-    colors = {
-        'red': '\033[91m',
-        'green': '\033[92m',
-        'blue': '\033[94m',
-        'teal': '\033[96m',
-        'lavender': '\033[95m',
-        'yellow': '\033[93m',
-        'reset': '\033[0m',
-    }
-
-    if color not in colors:
-        raise ValueError(f"Invalid color '{color}'. Available colors: {', '.join(colors.keys())}")
-
-    color_code = colors[color]
-    reset_code = colors['reset']
-
-    print(f"{color_code}{text}{reset_code}")
+console = Console()
 
 @app.callback()
 def main(
@@ -39,7 +21,10 @@ def main(
     """
     Split the image into four equal quadrants and save them as separate images.
     """
-    # Expand file globs and handle space-separated paths
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Status", style="dim", width=12)
+    table.add_column("Message", justify="left")
+
     image_files = []
     for image_path in image_paths:
         if '*' in image_path or '?' in image_path:
@@ -48,19 +33,17 @@ def main(
             image_files.append(image_path)
 
     for image_file in image_files:
-        # Validate the image path
         if not os.path.isfile(image_file):
-            print_color(f'Invalid image file: {image_file}', 'red')
+            table.add_row("[bold red]Error", f"Invalid image file: {image_file}")
             continue
 
         with Image.open(image_file) as image:
-            # Check if the image meets the minimum width requirement, if specified
             if min_width is not None and image.width < min_width:
-                print_color(f'Skipping {image_file} (width {image.width} < min width {min_width})', 'yellow')
+                table.add_row("[bold yellow]Skipped", f"{image_file} (width {image.width} < min width {min_width})")
                 continue
 
             if not allow_non_square and image.width != image.height:
-                print_color(f'Skipping {image_file} (is not square)', 'yellow')
+                table.add_row("[bold yellow]Skipped", f"{image_file} (is not square)")
                 continue
 
             image_format = image.format
@@ -69,7 +52,7 @@ def main(
             existing_files = glob.glob(os.path.join(output_dir, f'{base_name}.*.{output_format}'))
 
             if existing_files:
-                print_color(f'Split images already exist for {image_file}. Skipping...', 'yellow')
+                table.add_row("[bold yellow]Skipped", f'Split images already exist for {image_file}. Skipping...')
                 continue
 
             # Get the width and height of the image
@@ -98,7 +81,7 @@ def main(
 
             # Delete the original image file
             if delete:
-                print_color(f'Moving {image_file} to recycle bin', 'lavender')
+                table.add_row("[bold lavender]Deleted", f"Moving {image_file} to recycle bin")
                 send2trash.send2trash(image_file)
 
 if __name__ == "__main__":
