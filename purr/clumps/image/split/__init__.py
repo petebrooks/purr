@@ -3,12 +3,10 @@ import os
 import send2trash
 from PIL import Image
 import typer
-from rich.console import Console
 from rich.table import Table
 from typing import List
 
 app = typer.Typer(invoke_without_command=True)
-console = Console()
 
 @app.callback()
 def main(
@@ -77,7 +75,7 @@ def main(
             bottom_left.save(os.path.join(output_dir, f'{base_name}.bottom_left.{output_format}'), format=image_format)
             bottom_right.save(os.path.join(output_dir, f'{base_name}.bottom_right.{output_format}'), format=image_format)
 
-            print_color(f'Split {image_file}', 'green')
+            table.add_row("[bold green]Success", f"Split {image_file}")
 
             # Delete the original image file
             if delete:
