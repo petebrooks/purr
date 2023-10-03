@@ -66,6 +66,7 @@ def main(
     min_width: int = typer.Option(None, "--min-width", "-mw", help="Minimum width of image to process"),
     rows: int = typer.Option(1, "--rows", "-r", help="Number of rows to split the image into"),
     columns: int = typer.Option(1, "--columns", "-c", help="Number of columns to split the image into"),
+    header: int = typer.Option(0, "--header", "-H", help="Height of header to be removed from the first row"),
 ):
     """
     Split the image into specified rows and columns and save them as separate images.
@@ -103,6 +104,10 @@ def main(
             if existing_files:
                 table.add_row("[bold yellow]Skipped", f'Split images already exist for {image_file}. Skipping...')
                 continue
+
+            # Remove header row if specified
+            if header > 0:
+                image = image.crop((0, header, image.width, image.height))
 
             # Get the width and height of the image
             width, height = image.size
