@@ -6,6 +6,7 @@ import typer
 from rich.table import Table
 from rich.console import Console
 from typing import List
+import re
 
 app = typer.Typer(invoke_without_command=True)
 
@@ -43,6 +44,12 @@ def main(
             "in which case it will be relative to the current working directory. "
             "Absolute paths are also accepted."
         )
+    ),
+    output_names: str = typer.Option(
+        None,
+        "--output-names",
+        "-n",
+        help="Comma or pipe separated list of substrings to use for the output files. If fewer names than output files, revert to the original naming scheme."
     ),
     delete: bool = typer.Option(
         False,
@@ -107,6 +114,12 @@ def main(
             # Create the output directory if it doesn't exist
             os.makedirs(output_dir, exist_ok=True)
 
+            # Determine the naming substrings
+            if output_names:
+                name_substrings = re.split(r'[|,]', output_names)
+            else:
+                name_substrings = []
+
             split_images_paths = []
             for i in range(rows):
                 for j in range(columns):
@@ -117,8 +130,16 @@ def main(
                     lower = upper + cell_height
                     cell = image.crop((left, upper, right, lower))
 
+                    # Determine the output name for the slice
+                    slice_index = i * columns + j
+                    if slice_index < len(name_substrings):
+                        output_name = f'{base_name}.{name_substrings[slice_index]}.{output_format}'
+                    else:
+                        output_name = f'{base_name}.{slice_index}.{output_format}'
+                        # output_name = f'{base_name}.{i}_{j}.{output_format}'
+
                     # Save the split images with the input image format
-                    output_path = os.path.join(output_dir, f'{base_name}.{i}_{j}.{output_format}')
+                    output_path = os.path.join(output_dir, output_name)
                     cell.save(output_path, format=image_format)
                     split_images_paths.append(output_path)
 
