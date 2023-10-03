@@ -32,10 +32,6 @@ purr <clump> <script> [script_args]
 purr image mirror sample.jpg --east
 ```
 
-### Discovering Clumps and Scripts
-
-The CLI will automatically discover "clumps" (collections of scripts) and individual scripts based on the folder structure under the `./clumps/` directory.
-
 ## Development Notes
 
 ### Running the App in Development
