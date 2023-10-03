@@ -28,9 +28,11 @@ app = typer.Typer()
 
 import clumps.image.mirror.entry as mirror
 import clumps.image.split as split
+import clumps.image.filter as image_filter
 image_app = typer.Typer(name="image")
 image_app.add_typer(mirror.app, name="mirror")
 image_app.add_typer(split.app, name="split")
+image_app.add_typer(image_filter.app, name="filter")
 app.add_typer(image_app)
 
 if __name__ == "__main__":
