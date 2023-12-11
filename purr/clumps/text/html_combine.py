@@ -70,8 +70,8 @@ def combine_files(
     combined_file.close()
 
 
-@app.command()
-def main(
+@app.callback()
+def html_combine(
     input_directory: str = typer.Argument(..., help="Input directory with HTML files."),
     output_directory: str = typer.Option(
         None, help="Output directory for combined files."
