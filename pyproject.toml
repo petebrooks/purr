@@ -15,7 +15,7 @@ rich = "^13.5.3"
 
 
 [tool.poetry.scripts]
-purr = "main:app"
+purr = "purr.main:main"
 
 
 [build-system]

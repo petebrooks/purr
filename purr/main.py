@@ -26,9 +26,10 @@ app = typer.Typer()
 #         return cmd
 #     return None
 
-import clumps.image.mirror.entry as mirror
-import clumps.image.split as split
-import clumps.image.filter as image_filter
+import purr.clumps.image.mirror.entry as mirror
+import purr.clumps.image.split as split
+import purr.clumps.image.filter as image_filter
+
 image_app = typer.Typer(name="image")
 image_app.add_typer(mirror.app, name="mirror")
 image_app.add_typer(split.app, name="split")

@@ -8,10 +8,16 @@
 
 ### Using Poetry
 
-4. Install dependencies using Poetry.
+Install dependencies using Poetry.
 ```bash
 poetry install
 ```
+
+Build.
+`poetry build`
+
+Install.
+`pip install -e .`
 
 ### Add to PATH
 
