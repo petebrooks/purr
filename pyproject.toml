@@ -14,7 +14,7 @@ pillow = "^10.0.1"
 rich = "^13.5.3"
 htmlmin = "^0.1.12"
 markdownify = "^0.11.6"
-bs4 = "^0.0.1"
+beautifulsoup4 = "^4.12.2"
 
 
 [tool.poetry.scripts]
