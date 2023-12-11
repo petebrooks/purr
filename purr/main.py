@@ -36,5 +36,16 @@ image_app.add_typer(split.app, name="split")
 image_app.add_typer(image_filter.app, name="filter")
 app.add_typer(image_app)
 
-if __name__ == "__main__":
+import purr.clumps.text.html_combine as html_combine
+
+text_app = typer.Typer(name="text")
+text_app.add_typer(html_combine.app, name="html_combine")
+app.add_typer(text_app)
+
+
+def main():
     app()
+
+
+if __name__ == "__main__":
+    main()
