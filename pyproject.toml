@@ -12,6 +12,7 @@ numpy = "^1.26.0"
 send2trash = "^1.8.2"
 pillow = "^10.0.1"
 rich = "^13.5.3"
+htmlmin = "^0.1.12"
 
 
 [tool.poetry.scripts]
