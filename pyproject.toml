@@ -15,6 +15,7 @@ rich = "^13.5.3"
 htmlmin = "^0.1.12"
 markdownify = "^0.11.6"
 beautifulsoup4 = "^4.12.2"
+tqdm = "^4.66.1"
 
 
 [tool.poetry.scripts]

@@ -4,6 +4,7 @@ import typer
 from concurrent.futures import ProcessPoolExecutor
 from markdownify import markdownify as md
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 app = typer.Typer(invoke_without_command=True)
 
@@ -41,17 +42,21 @@ def combine_files(
     current_file_size = 0
     current_file_num = 1
 
-    with ProcessPoolExecutor() as executor:
-        future_to_file = {
-            executor.submit(
-                process_file, os.path.join(subdir, file), minify, markdown
-            ): file
-            for subdir, _, files in os.walk(input_dir)
-            for file in files
-            if file.endswith(".html")
-        }
+    file_paths = [
+        (os.path.join(subdir, file), minify, markdown)
+        for subdir, _, files in os.walk(input_dir)
+        for file in files
+        if file.endswith(".html")
+    ]
 
-        for future in future_to_file:
+    with ProcessPoolExecutor() as executor, tqdm(
+        total=len(file_paths), desc="Processing Files", unit="file"
+    ) as progress:
+        futures = [
+            executor.submit(process_file, *file_info) for file_info in file_paths
+        ]
+
+        for future in futures:
             content = future.result()
             content_size = len(content.encode("utf-8"))
 
@@ -66,6 +71,7 @@ def combine_files(
 
             combined_file.write(content)
             current_file_size += content_size
+            progress.update(1)
 
     combined_file.close()
 
