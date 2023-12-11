@@ -9,23 +9,17 @@ app = typer.Typer(invoke_without_command=True)
 
 
 def convert_html_to_markdown(html_content: str) -> str:
-    """
-    Converts HTML content to Markdown.
-    """
     soup = BeautifulSoup(html_content, "html.parser")
     body_content = soup.find("body") or html_content
     return md(str(body_content))
 
 
-def process_file(file_path: str, minify: bool, convert_to_markdown: bool) -> str:
-    """
-    Processes an individual HTML file - reads, optionally minifies and/or converts to Markdown.
-    """
+def process_file(file_path: str, minify: bool, markdown: bool) -> str:
     with open(file_path, "r") as file:
         content = file.read()
         if minify:
             content = htmlmin.minify(content, remove_empty_space=True)
-        if convert_to_markdown:
+        if markdown:
             content = convert_html_to_markdown(content)
         return content
 
@@ -36,15 +30,12 @@ def combine_files(
     max_size: int,
     buffer_size: int,
     minify: bool,
-    convert_to_markdown: bool,
+    markdown: bool,
 ):
-    """
-    Combines HTML files from a directory into single files of a maximum size, with options to minify and/or convert to Markdown.
-    """
     output_dir = output_dir or os.getcwd()
     os.makedirs(output_dir, exist_ok=True)
 
-    file_extension = "md" if convert_to_markdown else "html"
+    file_extension = "md" if markdown else "html"
     combined_file_path = os.path.join(output_dir, f"combined_1.{file_extension}")
     combined_file = open(combined_file_path, "w")
     current_file_size = 0
@@ -53,7 +44,7 @@ def combine_files(
     with ProcessPoolExecutor() as executor:
         future_to_file = {
             executor.submit(
-                process_file, os.path.join(subdir, file), minify, convert_to_markdown
+                process_file, os.path.join(subdir, file), minify, markdown
             ): file
             for subdir, _, files in os.walk(input_dir)
             for file in files
@@ -90,8 +81,8 @@ def main(
     ),
     buffer_size: int = typer.Option(1024 * 1024, help="Buffer size for reading files."),
     minify_html: bool = typer.Option(False, "--minify", help="Minify HTML files."),
-    convert_to_markdown: bool = typer.Option(
-        False, "--convert-md", help="Convert HTML to Markdown."
+    markdown: bool = typer.Option(
+        False, "--markdown", "--md", help="Convert HTML to Markdown."
     ),
 ):
     """
@@ -103,7 +94,7 @@ def main(
         max_file_size,
         buffer_size,
         minify_html,
-        convert_to_markdown,
+        markdown,
     )
 
 
