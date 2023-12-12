@@ -9,6 +9,13 @@ from tqdm import tqdm
 app = typer.Typer(invoke_without_command=True)
 
 
+def remove_nav_and_footer(html_content: str) -> str:
+    soup = BeautifulSoup(html_content, "html.parser")
+    for element in soup.find_all(["nav", "footer"]):
+        element.decompose()
+    return str(soup)
+
+
 def convert_html_to_markdown(html_content: str) -> str:
     soup = BeautifulSoup(html_content, "html.parser")
     body_content = soup.find("body") or html_content
@@ -18,6 +25,7 @@ def convert_html_to_markdown(html_content: str) -> str:
 def process_file(file_path: str, minify: bool, markdown: bool) -> str:
     with open(file_path, "r") as file:
         content = file.read()
+        content = remove_nav_and_footer(content)
         if minify:
             content = htmlmin.minify(content, remove_empty_space=True)
         if markdown:
