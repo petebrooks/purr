@@ -36,11 +36,12 @@ def process_file(file_path: str, minify: bool, markdown: bool) -> str:
 def combine_files(
     input_dir: str,
     output_dir: str,
-    max_size: int,
+    max_size_mb: int,  # New parameter for max size in MB
     buffer_size: int,
     minify: bool,
     markdown: bool,
 ):
+    max_size = max_size_mb * 1024 * 1024  # Convert MB to bytes
     output_dir = output_dir or os.getcwd()
     os.makedirs(output_dir, exist_ok=True)
 
@@ -90,8 +91,8 @@ def html_combine(
     output_directory: str = typer.Option(
         None, help="Output directory for combined files."
     ),
-    max_file_size: int = typer.Option(
-        80 * 1024 * 1024, help="Maximum size of combined files."
+    max_file_size_mb: int = typer.Option(
+        80, help="Maximum size of combined files in MB."
     ),
     buffer_size: int = typer.Option(1024 * 1024, help="Buffer size for reading files."),
     minify_html: bool = typer.Option(False, "--minify", help="Minify HTML files."),
@@ -105,12 +106,11 @@ def html_combine(
     combine_files(
         input_directory,
         output_directory,
-        max_file_size,
+        max_file_size_mb,
         buffer_size,
         minify_html,
         markdown,
     )
-
 
 if __name__ == "__main__":
     app()
